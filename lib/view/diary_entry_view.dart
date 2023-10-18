@@ -7,13 +7,11 @@ import 'package:intl/intl.dart';
 import 'diary_log_view.dart';
 
 class AddDiaryEntryView extends StatefulWidget {
-
   @override
   _AddDiaryEntryViewState createState() => _AddDiaryEntryViewState();
 }
 
 class _AddDiaryEntryViewState extends State<AddDiaryEntryView> {
-
   final TextEditingController descriptionController = TextEditingController();
   double rating = 3.0; // Initial rating value
   DateTime selectedDate = DateTime.now(); // Initial date value
@@ -34,34 +32,43 @@ class _AddDiaryEntryViewState extends State<AddDiaryEntryView> {
       });
   }
 
-  void _saveDiaryEntry() async{
+  void _saveDiaryEntry() async {
     description = descriptionController.text;
     DiaryModel diaryEntry = DiaryModel(
-        dateTime: selectedDate, description: description, rating: rating.toInt());
-    // DiaryController diaryController = DiaryController();
-    // diaryController.addDiary(diaryEntry);
-    diaryController.addDiaryWithDateCheck(diaryEntry, diaryController.getAllDiaryEntries());
-    // diaryController.addDiary(diaryEntry);
+        dateTime: selectedDate,
+        description: description,
+        rating: rating.toInt());
+
+    bool successfullyAdded = diaryController.addDiaryWithDateCheck(
+        diaryEntry, diaryController.getAllDiaryEntries());
+
     descriptionController.clear();
     print('rating is: $rating');
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => DiaryLogView()),
-    );
+    if (successfullyAdded) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => DiaryLogView()),
+      );
+    } else {
+      // Show the error dialog when the button is pressed
+      showDialog(
+        context: context,
+        builder: (context) {
+          return ErrorDialog();
+        },
+      );
+    }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.deepPurple,
-          title: Text(
-              "Add Diary Entry",
-              style: GoogleFonts.pacifico(
-                color: Colors.white,
-                fontSize: 30.0,
-              )
-          ),
+        backgroundColor: Colors.deepPurple,
+        title: Text("Add Diary Entry",
+            style: GoogleFonts.pacifico(
+              color: Colors.white,
+              fontSize: 30.0,
+            )),
         leading: IconButton(
             icon: Icon(Icons.arrow_back_outlined),
             tooltip: 'Go back',
@@ -69,23 +76,22 @@ class _AddDiaryEntryViewState extends State<AddDiaryEntryView> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => DiaryLogView()),
+                MaterialPageRoute(builder: (context) => DiaryLogView()),
               );
             }),
-          // actions: <Widget>[
-          //   IconButton(
-          //     color: Colors.white,
-          //     icon: const Icon(Icons.arrow_back_outlined),
-          //     tooltip: 'Go back',
-          //     onPressed: () {
-          //       Navigator.push(
-          //         context,
-          //         MaterialPageRoute(builder: (context) => DiaryLogView),
-          //       );
-          //     },
-          //   ),
-          // ]
+        // actions: <Widget>[
+        //   IconButton(
+        //     color: Colors.white,
+        //     icon: const Icon(Icons.arrow_back_outlined),
+        //     tooltip: 'Go back',
+        //     onPressed: () {
+        //       Navigator.push(
+        //         context,
+        //         MaterialPageRoute(builder: (context) => DiaryLogView),
+        //       );
+        //     },
+        //   ),
+        // ]
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -147,6 +153,20 @@ class _AddDiaryEntryViewState extends State<AddDiaryEntryView> {
   }
 }
 
-// void main() {
-//   runApp(MaterialApp(home: AddDiaryEntryView()));
-// }
+class ErrorDialog extends StatelessWidget {
+  const ErrorDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Error Exception'),
+      content: const Text('Entry already exists for this date!'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.pop(context, 'OK'),
+          child: const Text('OK'),
+        ),
+      ],
+    );
+  }
+}
