@@ -39,8 +39,22 @@ class DiaryController {
     }
   }
 
+  List<DiaryModel> filterDiaryEntriesByMonth(List<DiaryModel> diaryEntries, int selectedMonth) {
 
-  void addDiaryWithDateCheck(DiaryModel entry, List<DiaryModel> diaries) {
+    var allDiaries = diaryEntries;
+    List<DiaryModel> filteredDiaries = [];
+
+    for (DiaryModel diary in allDiaries) {
+      if (diary.dateTime.month == selectedMonth) {
+        filteredDiaries.add(diary);
+      }
+    }
+
+    return filteredDiaries;
+
+  }
+
+  bool addDiaryWithDateCheck(DiaryModel entry, List<DiaryModel> diaries) {
     bool shouldAdd = true;
 
     for (DiaryModel diary in diaries) {
@@ -53,5 +67,6 @@ class DiaryController {
     if (shouldAdd) {
       box.add(entry);
     }
+    return shouldAdd;
   }
 }
