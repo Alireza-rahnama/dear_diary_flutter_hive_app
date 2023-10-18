@@ -1,18 +1,24 @@
 import 'package:dear_diary_with_hive/controller/diary_controller.dart';
 import 'package:dear_diary_with_hive/model/diary_model.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
+import 'diary_log_view.dart';
+
 class AddDiaryEntryView extends StatefulWidget {
+
   @override
   _AddDiaryEntryViewState createState() => _AddDiaryEntryViewState();
 }
 
 class _AddDiaryEntryViewState extends State<AddDiaryEntryView> {
+
   final TextEditingController descriptionController = TextEditingController();
   double rating = 3.0; // Initial rating value
   DateTime selectedDate = DateTime.now(); // Initial date value
   late String description;
+  var diaryController = DiaryController();
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -28,20 +34,57 @@ class _AddDiaryEntryViewState extends State<AddDiaryEntryView> {
       });
   }
 
-  void _saveDiaryEntry() {
+  void _saveDiaryEntry() async{
     description = descriptionController.text;
     DiaryModel diaryEntry = DiaryModel(
         dateTime: selectedDate, description: description, rating: rating);
-
-    DiaryController controller = DiaryController.initBox();
-    controller.addDiary(diaryEntry);
+    // DiaryController diaryController = DiaryController();
+    // diaryController.addDiary(diaryEntry);
+    // diaryController.addDiaryWithDateCheck(diaryEntry);
+    diaryController.addDiary(diaryEntry);
+    // descriptionController.clear();
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => DiaryLogView()),
+    // );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Diary Entry'),
+          backgroundColor: Colors.deepPurple,
+          title: Text(
+              "Add Diary Entry",
+              style: GoogleFonts.pacifico(
+                color: Colors.white,
+                fontSize: 30.0,
+              )
+          ),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back_outlined),
+            tooltip: 'Go back',
+            color: Colors.white,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DiaryLogView()),
+              );
+            }),
+          // actions: <Widget>[
+          //   IconButton(
+          //     color: Colors.white,
+          //     icon: const Icon(Icons.arrow_back_outlined),
+          //     tooltip: 'Go back',
+          //     onPressed: () {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(builder: (context) => DiaryLogView),
+          //       );
+          //     },
+          //   ),
+          // ]
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -103,6 +146,6 @@ class _AddDiaryEntryViewState extends State<AddDiaryEntryView> {
   }
 }
 
-void main() {
-  runApp(MaterialApp(home: AddDiaryEntryView()));
-}
+// void main() {
+//   runApp(MaterialApp(home: AddDiaryEntryView()));
+// }

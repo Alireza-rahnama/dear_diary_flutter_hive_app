@@ -1,20 +1,21 @@
+import 'package:dear_diary_with_hive/view/diary_entry_view.dart';
 import 'package:dear_diary_with_hive/view/diary_log_view.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'controller/diary_controller.dart';
 import 'model/diary_model.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
-
   //initilaize hive
   await Hive.initFlutter();
 
-  var key = Hive.generateSecureKey();
+  Hive.registerAdapter(DiaryModelAdapter());
 
   //open box with encryption activated for storing data
-  await Hive.openBox<DiaryModel>('diary_box');
+  await Hive.openBox<DiaryModel>('diary');
 
-  Hive.registerAdapter(DiaryModelAdapter());
+  // var key = Hive.generateSecureKey();
 
   runApp(const MainApp());
 }

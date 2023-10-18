@@ -1,30 +1,15 @@
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:intl/intl.dart';
 import '../model/diary_model.dart';
 
 class DiaryController {
-  var box;
+  Box<DiaryModel> box = Hive.box('diary');
 
-  DiaryController.initBox() {
-    init();
-  }
-
-  // DiaryController() {
-  //   init();
+  // void addDiary(DiaryModel diaryEntry) {
+  //   // final key = diaryEntry.dateTime.toIso8601String();
+  //     box.add(diaryEntry);
   // }
-
-  Future<void> init() async {
-    try {
-      box = await Hive.openBox('diary_box');
-    } catch (e) {
-      print('Error initializing Hive: $e');
-    }
-  }
-
-  void addDiary(DiaryModel diaryEntry) {
-    if (!box.containsKey(diaryEntry.dateTime)) {
-      box.add(diaryEntry);
-    }
-  }
 
   void updateDiary(int index, DiaryModel updatedDiary) {
     if (index >= 0 && index < box.length) {
@@ -52,5 +37,19 @@ class DiaryController {
     } else {
       return []; // Return an empty list if there are no entries
     }
+  }
+
+  // void addDiaryWithDateCheck(DiaryModel entry){
+  //   List<DiaryModel> diaries = getAllDiaryEntries();
+  //
+  //   for(DiaryModel diary in diaries){
+  //     if(diary.dateTime != entry.dateTime){
+  //       box.add(entry);
+  //     }
+  //   }
+  // }
+
+  void addDiary(DiaryModel entry){
+        box.add(entry);
   }
 }
