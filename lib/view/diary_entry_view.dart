@@ -40,8 +40,8 @@ class _AddDiaryEntryViewState extends State<AddDiaryEntryView> {
         dateTime: selectedDate, description: description, rating: rating.toInt());
     // DiaryController diaryController = DiaryController();
     // diaryController.addDiary(diaryEntry);
-    // diaryController.addDiaryWithDateCheck(diaryEntry);
-    diaryController.addDiary(diaryEntry);
+    diaryController.addDiaryWithDateCheck(diaryEntry, diaryController.getAllDiaryEntries());
+    // diaryController.addDiary(diaryEntry);
     descriptionController.clear();
     print('rating is: $rating');
     Navigator.push(

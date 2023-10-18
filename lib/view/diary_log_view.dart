@@ -76,11 +76,11 @@ class DiaryLogView extends StatelessWidget {
                             color: Colors.black,
                             onPressed: () {
                               diaryController.deleteDiaryAtIndex(index);
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //       builder: (context) => DiaryLogView()),
-                              // );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => DiaryLogView()),
+                              );
                             })
 
                         // Icon(Icons.delete)

@@ -39,17 +39,19 @@ class DiaryController {
     }
   }
 
-  // void addDiaryWithDateCheck(DiaryModel entry){
-  //   List<DiaryModel> diaries = getAllDiaryEntries();
-  //
-  //   for(DiaryModel diary in diaries){
-  //     if(diary.dateTime != entry.dateTime){
-  //       box.add(entry);
-  //     }
-  //   }
-  // }
 
-  void addDiary(DiaryModel entry){
-        box.add(entry);
+  void addDiaryWithDateCheck(DiaryModel entry, List<DiaryModel> diaries) {
+    bool shouldAdd = true;
+
+    for (DiaryModel diary in diaries) {
+      if (diary.dateTime.day == entry.dateTime.day) {
+        shouldAdd = false;
+        break; // Exit the loop as soon as a matching day is found
+      }
+    }
+
+    if (shouldAdd) {
+      box.add(entry);
+    }
   }
 }
