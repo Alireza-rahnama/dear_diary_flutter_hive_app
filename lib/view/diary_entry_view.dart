@@ -37,16 +37,17 @@ class _AddDiaryEntryViewState extends State<AddDiaryEntryView> {
   void _saveDiaryEntry() async{
     description = descriptionController.text;
     DiaryModel diaryEntry = DiaryModel(
-        dateTime: selectedDate, description: description, rating: rating);
+        dateTime: selectedDate, description: description, rating: rating.toInt());
     // DiaryController diaryController = DiaryController();
     // diaryController.addDiary(diaryEntry);
     // diaryController.addDiaryWithDateCheck(diaryEntry);
     diaryController.addDiary(diaryEntry);
-    // descriptionController.clear();
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => DiaryLogView()),
-    // );
+    descriptionController.clear();
+    print('rating is: $rating');
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => DiaryLogView()),
+    );
   }
 
   @override

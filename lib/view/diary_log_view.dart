@@ -102,23 +102,18 @@ class DiaryLogView extends StatelessWidget {
 Row RatingEvaluator(DiaryModel entry) {
   switch (entry.rating) {
     case (1):
-      return const Row(children: [
+      return Row(children: [
         Icon(Icons.star),
       ]);
     case (2):
-      return const Row(children: [Icon(Icons.star), Icon(Icons.star)]);
+      return Row(children: [Icon(Icons.star), Icon(Icons.star)]);
     case (3):
-      return const Row(
+      return Row(
           children: [Icon(Icons.star), Icon(Icons.star), Icon(Icons.star)]);
     case (4):
-      return const Row(children: [
-        Icon(Icons.star),
-        Icon(Icons.star),
-        Icon(Icons.star),
-        Icon(Icons.star),
-      ]);
+      return Row(children: [ Icon(Icons.star), Icon(Icons.star), Icon(Icons.star), Icon(Icons.star)]);
     case (5):
-      return const Row(children: [
+      return Row(children: [
         Icon(Icons.star),
         Icon(Icons.star),
         Icon(Icons.star),
