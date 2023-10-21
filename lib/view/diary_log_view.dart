@@ -9,34 +9,112 @@ import '../model/diary_model.dart';
 import 'diary_entry_view.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-
-class DiaryLogView extends StatefulWidget {
+class DiaryLogsListView extends StatefulWidget {
   DiaryController diaryController = DiaryController();
 
   @override
-  _DiaryLogViewState createState() => _DiaryLogViewState();
+  _DiaryLogsListViewState createState() => _DiaryLogsListViewState();
 }
 
-class _DiaryLogViewState extends State<DiaryLogView> {
-  DateTime? selectedMonth;
+class _DiaryLogsListViewState extends State<DiaryLogsListView> {
+  Month? selectedMonth;
+  late List<DiaryModel> filteredEntries;
+
+  void updateState() {
+    setState(() {
+      List<DiaryModel> diaryEntries = widget.diaryController.getAllDiaryEntries();
+
+      filteredEntries = [];
+      if (selectedMonth?.Number == 0) {
+        filteredEntries = diaryEntries;
+      } else {
+        filteredEntries = (selectedMonth != null)
+            ? diaryEntries.where((entry) {
+          return entry.dateTime.month == selectedMonth!.Number;
+        }).toList()
+            : diaryEntries;
+      }
+
+      // Sort the filtered entries in reverse chronological order (newest first)
+      filteredEntries.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    });
+  }
+
+  void _showEditDialog(BuildContext context, DiaryModel diaryEntry, int index) {
+    TextEditingController descriptionEditingController = TextEditingController();
+    descriptionEditingController.text = diaryEntry.description; // Initialize the text field with existing content.
+
+    TextEditingController ratingEditingController = TextEditingController();
+    ratingEditingController.text = diaryEntry.rating.toString();
+
+    TextEditingController dateEditingController = TextEditingController();
+    dateEditingController.text = DateFormat('yyyy-MM-dd').format(diaryEntry.dateTime);
+
+    DiaryController diaryController = DiaryController();
+    List<DiaryModel> allEntries = diaryController.getAllDiaryEntries();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit Diary Entry'),
+          content: Column(children: [
+            TextField(
+              controller: descriptionEditingController,
+              decoration: InputDecoration(labelText: "New Description"),
+              maxLines: null, // Allows multiple lines of text.
+            ),
+            TextField(
+              controller: ratingEditingController,
+              decoration: InputDecoration(labelText: "New Rating"),
+              maxLines: null, // Allows multiple lines of text.
+            ),
+            TextField(
+              controller: dateEditingController,
+              decoration: InputDecoration(labelText: "New Date"),
+              maxLines: null, // Allows multiple lines of text.
+            )
+          ]),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Save'),
+              onPressed: () {
+                // Save the edited content to the diary entry.
+
+                diaryController.updateDiary(index, DiaryModel(description: descriptionEditingController.text,
+                    rating: int.parse(ratingEditingController.text),dateTime: DateTime.parse(dateEditingController.text)));
+
+                updateState();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     // Get all diary entries
     List<DiaryModel> diaryEntries = widget.diaryController.getAllDiaryEntries();
 
-    // Filter entries by selected month
-    // List<DiaryModel> filteredEntries = selectedMonth != null
-    //     ? diaryEntries.where((entry) {
-    //   return entry.dateTime.month == selectedMonth.month;
-    // }).toList()
-    //     : diaryEntries;
-
-    List<DiaryModel> filteredEntries = (selectedMonth != null)
-        ? diaryEntries.where((entry) {
-      return entry.dateTime.month == selectedMonth!.month;
-    }).toList()
-        : diaryEntries;
+    filteredEntries = [];
+    if (selectedMonth?.Number == 0) {
+      filteredEntries = diaryEntries;
+    } else {
+      filteredEntries = (selectedMonth != null)
+          ? diaryEntries.where((entry) {
+        return entry.dateTime.month == selectedMonth!.Number;
+      }).toList()
+          : diaryEntries;
+    }
 
     // Sort the filtered entries in reverse chronological order (newest first)
     filteredEntries.sort((a, b) => b.dateTime.compareTo(a.dateTime));
@@ -50,7 +128,7 @@ class _DiaryLogViewState extends State<DiaryLogView> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AddDiaryEntryView()),
+              MaterialPageRoute(builder: (context) => NewView()),
             );
           },
         ),
@@ -72,34 +150,38 @@ class _DiaryLogViewState extends State<DiaryLogView> {
             },
           ),
           // Add a filter button for selecting a month
-          PopupMenuButton<DateTime>(
-            onSelected: (DateTime month) {
+          PopupMenuButton<Month>(
+            onSelected: (Month month) {
               setState(() {
                 selectedMonth = month;
               });
             },
-            icon: Icon(Icons.filter_list, color: Colors.white,),
+            icon: Icon(
+              Icons.filter_list,
+              color: Colors.white,
+            ),
             itemBuilder: (BuildContext context) {
               // Create a list of months for filtering
-              final List<DateTime> months = [
-                DateTime(2023, 1), // January
-                DateTime(2023, 2), // February
-                DateTime(2023, 3), // March
-                DateTime(2023, 4), // April
-                DateTime(2023, 5), // May
-                DateTime(2023, 6), // June
-                DateTime(2023, 7), // July
-                DateTime(2023, 8), // August
-                DateTime(2023, 9), // September
-                DateTime(2023, 10), // October
-                DateTime(2023, 11), // November
-                DateTime(2023, 12), // December
+              final List<Month> months = [
+                Month(0, 'All'), // January
+                Month(1, 'Jan'), // February
+                Month(2, 'Feb'), // March
+                Month(3, 'Mar'), // April
+                Month(4, 'Apr'), // May
+                Month(5, 'May'), // June
+                Month(6, 'Jun'), // July
+                Month(7, 'Jul'), // August
+                Month(8, 'Aug'), // September
+                Month(9, 'Sep'), // October
+                Month(10, 'Oct'), // November
+                Month(11, 'Nov'), // December
+                Month(12, 'Dec'), // December
               ];
 
-              return months.map((DateTime month) {
-                return PopupMenuItem<DateTime>(
+              return months.map((Month month) {
+                return PopupMenuItem<Month>(
                   value: month,
-                  child: Text(DateFormat('MMMM').format(month)),
+                  child: Text(month.Name),
                 );
               }).toList();
             },
@@ -116,8 +198,7 @@ class _DiaryLogViewState extends State<DiaryLogView> {
             child: GestureDetector(
               onLongPress: () {
                 // Perform your action here when the Card is long-pressed.
-                // For example, you can show a dialog or delete the Card.
-                print('hello');
+                _showEditDialog(context, entry, index);
               },
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -126,7 +207,8 @@ class _DiaryLogViewState extends State<DiaryLogView> {
                   children: [
                     Text(
                       entry.description,
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 15),
                     Text(
@@ -143,11 +225,13 @@ class _DiaryLogViewState extends State<DiaryLogView> {
                           icon: Icon(Icons.delete),
                           color: Colors.black,
                           onPressed: () {
-                            widget.diaryController.deleteDiaryAtIndex(index);
+                            // widget.diaryController.deleteDiaryAtIndex(index);
+                            widget.diaryController.deleteDiaryAtDate(entry.dateTime, filteredEntries);
+
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => DiaryLogView(),
+                                builder: (context) => DiaryLogsListView(),
                               ),
                             );
                           },
@@ -167,15 +251,12 @@ class _DiaryLogViewState extends State<DiaryLogView> {
 // Rest of your code...
 }
 
-
 Future<void> exportToPDF(DiaryController diaryController) async {
   // Create a new PDF document
   final pdf = pw.Document();
 
   // Retrieve data from Hive
   final hiveData = await diaryController.getAllDiaryEntries();
-
-
 
   List<pw.Widget> list = await pdfTextChildren(hiveData);
 
@@ -191,7 +272,6 @@ Future<void> exportToPDF(DiaryController diaryController) async {
     ),
   );
 
-
   // Save the PDF file
   final directory = await getApplicationDocumentsDirectory();
   print(directory);
@@ -205,7 +285,7 @@ Future<List<pw.Widget>> pdfTextChildren(List<DiaryModel> entries) async {
   List<pw.Widget> textList = [];
   // final ttf = File('/Users/alirezarahnama/StudioProjects/dear_diary_with_hive/fonts/Pacifico-Regular.ttf').readAsBytesSync();
   // final ttf = File('../../fonts/Pacifico-Regular.ttf').readAsBytesSync();
-  final fontData = await rootBundle.load('fonts/Gabarito-VariableFont_wght.ttf');
+  final fontData = await rootBundle.load('fonts/Pacifico-Regular.ttf');
   final ttf = fontData.buffer.asUint8List();
   final font = pw.Font.ttf(ttf.buffer.asByteData());
 
@@ -213,7 +293,7 @@ Future<List<pw.Widget>> pdfTextChildren(List<DiaryModel> entries) async {
     textList.add(
       pw.Text(
         'On ${DateFormat('yyyy-MM-dd').format(entry.dateTime)}, ${entry.description} was rated ${entry.rating} stars.',
-        style: pw.TextStyle( font: font, fontSize: 12),
+        style: pw.TextStyle(font: font, fontSize: 12),
       ),
     );
   }
@@ -250,3 +330,20 @@ Row RatingEvaluator(DiaryModel entry) {
       return Row(); // Handle other cases or return an empty row if the rating is not 1-5.
   }
 }
+
+class Month {
+  int num;
+  String name;
+
+  Month(this.num, this.name);
+
+  String get Name {
+    return name;
+  }
+
+  int get Number {
+    return num;
+  }
+}
+
+

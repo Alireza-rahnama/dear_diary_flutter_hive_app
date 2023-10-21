@@ -20,6 +20,7 @@ class DiaryController {
         // Modify the existing entry with the updated values
         existingDiary.description = updatedDiary.description;
         existingDiary.dateTime = updatedDiary.dateTime;
+        existingDiary.rating = updatedDiary.rating;
 
         // Save the modified entry back into the box
         box.putAt(index, existingDiary);
@@ -31,6 +32,18 @@ class DiaryController {
     box.deleteAt(index);
   }
 
+  void deleteDiaryAtDate(DateTime entryDateToRemove, List<DiaryModel> filteredEntries) {
+    var keys = box.keys.toList();
+
+    for (int key in keys) {
+      var entry = box.get(key);
+      if (entry!.dateTime == entryDateToRemove) {
+        // Remove the entry with a matching date
+        box.delete(key);
+      }
+    }
+  }
+
   List<DiaryModel> getAllDiaryEntries() {
     if (box.values.isNotEmpty) {
       return box.values.toList();
@@ -39,8 +52,8 @@ class DiaryController {
     }
   }
 
-  List<DiaryModel> filterDiaryEntriesByMonth(List<DiaryModel> diaryEntries, int selectedMonth) {
-
+  List<DiaryModel> filterDiaryEntriesByMonth(
+      List<DiaryModel> diaryEntries, int selectedMonth) {
     var allDiaries = diaryEntries;
     List<DiaryModel> filteredDiaries = [];
 
@@ -51,7 +64,20 @@ class DiaryController {
     }
 
     return filteredDiaries;
+  }
 
+  List<DiaryModel> filterEncryptedDiaryEntriesByMonth(
+      List<DiaryModel> diaryEntries, int selectedMonth) {
+    var allDiaries = diaryEntries;
+    List<DiaryModel> filteredDiaries = [];
+
+    for (DiaryModel diary in allDiaries) {
+      if (diary.dateTime.month == selectedMonth) {
+        filteredDiaries.add(diary);
+      }
+    }
+
+    return filteredDiaries;
   }
 
   bool addDiaryWithDateCheck(DiaryModel entry, List<DiaryModel> diaries) {
@@ -66,6 +92,23 @@ class DiaryController {
 
     if (shouldAdd) {
       box.add(entry);
+    }
+    return shouldAdd;
+  }
+
+  bool putEncryptedDiaryWithDateCheck(
+      DiaryModel entry, List<DiaryModel> diaries) {
+    bool shouldAdd = true;
+
+    for (DiaryModel diary in diaries) {
+      if (diary.dateTime.day == entry.dateTime.day) {
+        shouldAdd = false;
+        break; // Exit the loop as soon as a matching day is found
+      }
+    }
+
+    if (shouldAdd) {
+      box.put(entry.dateTime, entry);
     }
     return shouldAdd;
   }

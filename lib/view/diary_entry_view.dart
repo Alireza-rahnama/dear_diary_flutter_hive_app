@@ -3,15 +3,14 @@ import 'package:dear_diary_with_hive/model/diary_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-
 import 'diary_log_view.dart';
 
-class AddDiaryEntryView extends StatefulWidget {
+class NewView extends StatefulWidget {
   @override
-  _AddDiaryEntryViewState createState() => _AddDiaryEntryViewState();
+  _NewViewState createState() => _NewViewState();
 }
 
-class _AddDiaryEntryViewState extends State<AddDiaryEntryView> {
+class _NewViewState extends State<NewView> {
   final TextEditingController descriptionController = TextEditingController();
   double rating = 3.0; // Initial rating value
   DateTime selectedDate = DateTime.now(); // Initial date value
@@ -47,7 +46,7 @@ class _AddDiaryEntryViewState extends State<AddDiaryEntryView> {
     if (successfullyAdded) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => DiaryLogView()),
+        MaterialPageRoute(builder: (context) => DiaryLogsListView()),
       );
     } else {
       // Show the error dialog when the button is pressed
@@ -76,22 +75,9 @@ class _AddDiaryEntryViewState extends State<AddDiaryEntryView> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => DiaryLogView()),
+                MaterialPageRoute(builder: (context) => DiaryLogsListView()),
               );
             }),
-        // actions: <Widget>[
-        //   IconButton(
-        //     color: Colors.white,
-        //     icon: const Icon(Icons.arrow_back_outlined),
-        //     tooltip: 'Go back',
-        //     onPressed: () {
-        //       Navigator.push(
-        //         context,
-        //         MaterialPageRoute(builder: (context) => DiaryLogView),
-        //       );
-        //     },
-        //   ),
-        // ]
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

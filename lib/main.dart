@@ -1,7 +1,6 @@
 import 'package:dear_diary_with_hive/view/diary_log_view.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
 import 'model/diary_model.dart';
 
 Future<void> main() async{
@@ -27,7 +26,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: DiaryLogView()
+      home: DiaryLogsListView()
     );
   }
 }
